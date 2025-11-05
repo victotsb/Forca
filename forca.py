@@ -8,48 +8,75 @@ def palavra_oculta(palavra):
     oculta = list("*" * len(palavra))
     return oculta
 
-def systemvida():
+def sistema_de_vida():
     global vidas
     vidas -= 1
 
-def jogar(palavra):
-    global vidas, oculta, letras_usadas
-    while True:
-        print(f"Você tem {vidas}")
-        print(f"Palavra {oculta}")
-        print(f"Letras usadas: {letras_usadas}")
-        #E se o fdp do jogador colocar um número?
-        letra = input("Coloque uma letra: ").lower().strip()
+def verificação_da_letra(letra):
+    if not letra:
+        print("Coloque uma letra!")
+        return False
+    elif len(letra) != 1:
+        print("Coloque só uma letra")
+        return False
+    elif not letra.isalpha():
+        print("Coloque só letras, não números nem caracteres")
+        return False
+    elif letra in letras_usadas:
+        print("Você já usou essa letra, tente novamente")
+        return False
+    else:
+        return True 
+         
+def jogador_ganhou_ou_perdeu(palavra):
+    if "*" not in oculta:
+        print("Você acertou a palavra: ", palavra)
+        return True
         
+    if vidas == 0:
+        print("Acabaram suas vidas, você perdeu o jogo, a palavra era: ", palavra)
+        return False
+    return False
+
+def verifica_se_tem_letra_na_palavra(letra, palavra):
+    if letra in palavra:
         for index, i in enumerate(palavra):
             if i == letra:
-                print(f"existe a letra {i} na posição {index}")
                 oculta[index] = letra
-                print(oculta)
-            if i == guardar_letras:
-                print("Letra já usada")
-            elif not i in oculta:
-                print(f"Não existe nenhuma letra {i} em nenhuma posição {index}")
-                print(f"Perdeu uma vida: {systemvida(vida)}")
+        print("Você acertou uma letra")
+    else:
+        sistema_de_vida()
+        print("Você errou a letra, perdeu uma vida! Tente novamente")
 
-            
-            
+def sistema_do_jogo(palavra):
+    global letras_usadas
+    while True:
+        print(f"Palavra:", "".join(oculta))
+        print(f"Letras usadas: {',' .join(letras_usadas)}")
+        print(f"Você tem {vidas} vidas")
 
+        letra = input("Coloque uma letra: ").lower().strip()
+        if not verificação_da_letra(letra):
+            continue
+        letras_usadas.append(letra)
 
+        verifica_se_tem_letra_na_palavra(letra, palavra)
 
+        if jogador_ganhou_ou_perdeu(palavra):
+            break
 
-palavra = input("Adicione a palavra: ").lower().strip()
-if palavra == " ":
-    print("nenhuma palavra adicionada")
-else:
-    os.system("cls")
+def adicionar_palavra_para_jogar(palavra_oculta, sistema_do_jogo):
+    while True:
+        palavra = input("Adicione a palavra: ").lower().strip()
+        if palavra == "":
+            print("nenhuma palavra adicionada")
+        elif not palavra.isalpha():
+            print("Coloque só letras, não números")
+        else:
+            os.system("cls")
+            palavra_oculta(palavra)
+            print("Tente adivnhar a palavra")
+            sistema_do_jogo(palavra)
+            break
 
-
-
-oculta = palavra_oculta(palavra)
-
-print(f"Você tem {vida} vidas")
-print("Jogador tente adivinhar a palavra")
-
-print(oculta)
-jogador_acertou(palavra, oculta)
+adicionar_palavra_para_jogar(palavra_oculta, sistema_do_jogo)
